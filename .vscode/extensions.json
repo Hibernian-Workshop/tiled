@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "theqtcompany.qt",
+        "qbs-community.qbs-tools",
+        "ms-vscode.cpptools"
+    ]
+}

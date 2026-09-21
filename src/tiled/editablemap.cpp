@@ -731,6 +731,11 @@ void EditableMap::setDocument(Document *document)
         connect(doc, &MapDocument::selectedObjectsChanged, this, &EditableMap::selectedObjectsChanged);
 
         connect(doc, &MapDocument::regionEdited, this, &EditableMap::onRegionEdited);
+
+        connect(doc, &Document::propertyAdded, this, &EditableMap::objectPropertyChanged);
+        connect(doc, &Document::propertyRemoved, this, &EditableMap::objectPropertyChanged);
+        connect(doc, &Document::propertyChanged, this, &EditableMap::objectPropertyChanged);
+        connect(doc, &Document::propertiesChanged, this, &EditableMap::objectPropertyChanged);
     }
 }
 
@@ -751,15 +756,30 @@ void EditableMap::documentChanged(const ChangeEvent &change)
         if (static_cast<const MapChangeEvent&>(change).property == Map::OrientationProperty)
             mRenderer.reset();
         break;
+    case ChangeEvent::ObjectsChanged:
+        for (Object *object : static_cast<const ObjectsChangeEvent&>(change).objects)
+            objectPropertyChanged(object);
+        break;
     case ChangeEvent::MapObjectsAdded:
         attachMapObjects(static_cast<const MapObjectsEvent&>(change).mapObjects);
+        emit objectsChanged();
         break;
     case ChangeEvent::MapObjectsAboutToBeRemoved:
         detachMapObjects(static_cast<const MapObjectsEvent&>(change).mapObjects);
         break;
+    case ChangeEvent::MapObjectsChanged:
+    case ChangeEvent::MapObjectsRemoved:
+        emit objectsChanged();
+        break;
     default:
         break;
     }
+}
+
+void EditableMap::objectPropertyChanged(Object *object)
+{
+    if (object->typeId() == Object::MapObjectType)
+        emit objectsChanged();
 }
 
 void EditableMap::attachLayer(Layer *layer)

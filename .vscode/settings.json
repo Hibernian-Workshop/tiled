@@ -1,0 +1,17 @@
+{
+    // Suppress CMake, since we use Qbs
+    "cmake.configureOnOpen": false,
+    "cmake.configureOnEdit": false,
+    "cmake.automaticReconfigure": false,
+    "cmake.ignoreCMakeListsMissing": true,
+    "cmake.enableAutomaticKitScan": false,
+    "cmake.options.statusBarVisibility": "hidden",
+
+    "qt-cpp.disableAutoKitGenerationOnOpen": true,
+    "qt-cpp.doNotWarnMissingSourceDir": true,
+    "qt-cpp.doNotWarnOutdatedCMakeTools": true,
+    "qt-core.qtInstallationRoot": "C:\\Qt",
+
+    "qbs.qbsPath": "C:\\Qt\\Tools\\Qbs\\bin\\qbs.exe",
+}
+

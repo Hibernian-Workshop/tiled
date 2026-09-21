@@ -3382,6 +3382,11 @@ declare class TileMap extends Asset {
   readonly selectedObjectsChanged: Signal<void>;
 
   /**
+   * The signal emitted when map objects are added, removed or changed.
+   */
+  readonly objectsChanged: Signal<void>;
+
+  /**
    * Constructs a new map.
    */
   constructor();
@@ -3702,6 +3707,13 @@ interface TileLayerEdit {
    * `false` and is automatically set to `true` by {@link apply}.
    */
   mergeable: boolean;
+
+  /**
+   * Whether applied edits are added to the undo history. Starts out as `true`.
+   *
+   * Set this to `false` for tiles that are generated from other data.
+   */
+  undoable: boolean;
 
   /**
    * Sets the tile at the given location, optionally specifying tile flags (any

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - hw
     tags:
       - '*'
     paths-ignore:

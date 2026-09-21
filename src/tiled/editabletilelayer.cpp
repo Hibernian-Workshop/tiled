@@ -125,7 +125,7 @@ TileLayerWangEdit *EditableTileLayer::wangEdit(EditableWangSet *wangSet)
     return new TileLayerWangEdit(this, wangSet);
 }
 
-void EditableTileLayer::applyChangesFrom(TileLayer *changes, bool mergeable)
+void EditableTileLayer::applyChangesFrom(TileLayer *changes, bool mergeable, bool undoable)
 {
     // Determine painted region and normalize the changes layer
     auto paintedRegion = changes->region([] (const Cell &cell) { return cell.checked(); });
@@ -138,24 +138,35 @@ void EditableTileLayer::applyChangesFrom(TileLayer *changes, bool mergeable)
     changes->resize(rect.size(), -rect.topLeft());
     const auto tilesets = changes->usedTilesets();
 
-    if (mapDocument()) {
-        // Apply the change using an undo command
+    if (mapDocument() && !undoable) {
         auto mapDocument = map()->mapDocument();
-        auto paint = new PaintTileLayer(mapDocument,
-                                        tileLayer(),
-                                        rect.x(), rect.y(),
-                                        changes,
-                                        paintedRegion);
+
+        const auto existingTilesets = mapDocument->map()->tilesets();
+        for (const SharedTileset &tileset : tilesets) {
+            if (!existingTilesets.contains(tileset)) {
+                map()->push(new AddTileset(mapDocument, tileset));
+            }
+        }
+
+        PaintTileLayer paint(mapDocument, tileLayer(), rect.x(), rect.y(), changes, paintedRegion);
+
+        paint.redo();
+    }
+    else if (mapDocument()) {
+        auto mapDocument = map()->mapDocument();
+        auto paint = new PaintTileLayer(mapDocument, tileLayer(), rect.x(), rect.y(), changes, paintedRegion);
         paint->setMergeable(mergeable);
 
-        // Add any used tilesets that aren't yet part of the target map
         const auto existingTilesets = mapDocument->map()->tilesets();
-        for (const SharedTileset &tileset : tilesets)
-            if (!existingTilesets.contains(tileset))
+        for (const SharedTileset &tileset : tilesets) {
+            if (!existingTilesets.contains(tileset)) {
                 new AddTileset(mapDocument, tileset, paint);
+            }
+        }
 
         map()->push(paint);
-    } else {
+    }
+    else {
         // Add any used tilesets that aren't yet part of the target map
         if (auto map = tileLayer()->map())
             map->addTilesets(tilesets);

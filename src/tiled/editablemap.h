@@ -221,6 +221,8 @@ signals:
     void selectedLayersChanged();
     void selectedObjectsChanged();
 
+    void objectsChanged();
+
     void regionEdited(const Tiled::RegionValueType &region, Tiled::EditableTileLayer *layer);
 
 protected:
@@ -228,6 +230,7 @@ protected:
 
 private:
     void documentChanged(const ChangeEvent &change);
+    void objectPropertyChanged(Object *object);
 
     void attachLayer(Layer *layer);
     void detachLayer(Layer *layer);
