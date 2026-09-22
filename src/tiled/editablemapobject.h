@@ -74,7 +74,7 @@ class EditableMapObject : public EditableObject
     Q_PROPERTY(Tiled::EditableTile *tile READ tile WRITE setTile)
     Q_PROPERTY(bool tileFlippedHorizontally READ tileFlippedHorizontally WRITE setTileFlippedHorizontally)
     Q_PROPERTY(bool tileFlippedVertically READ tileFlippedVertically WRITE setTileFlippedVertically)
-//    Q_PROPERTY(const ObjectTemplate *mObjectTemplate)
+    Q_PROPERTY(QString template READ templateFileName WRITE setTemplate)
     Q_PROPERTY(bool selected READ isSelected WRITE setSelected)
     Q_PROPERTY(Tiled::EditableObjectGroup *layer READ layer)
     Q_PROPERTY(Tiled::EditableMap *map READ map)
@@ -127,6 +127,7 @@ public:
     EditableTile *tile() const;
     bool tileFlippedHorizontally() const;
     bool tileFlippedVertically() const;
+    QString templateFileName() const;
     bool isSelected() const;
     EditableObjectGroup *layer() const;
     EditableMap *map() const;
@@ -164,6 +165,7 @@ public slots:
     void setTile(EditableTile *tile);
     void setTileFlippedHorizontally(bool tileFlippedHorizontally);
     void setTileFlippedVertically(bool tileFlippedVertically);
+    void setTemplate(const QString &fileName);
     void setSelected(bool selected);
 
 private:

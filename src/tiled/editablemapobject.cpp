@@ -25,7 +25,9 @@
 #include "editablemap.h"
 #include "editableobjectgroup.h"
 #include "editabletile.h"
+#include "objecttemplate.h"
 #include "scriptmanager.h"
+#include "templatemanager.h"
 
 #include <QCoreApplication>
 #include <QJSEngine>
@@ -285,6 +287,33 @@ void EditableMapObject::setTile(EditableTile *tile)
                 if (auto map = mapObject()->map())
                     map->addTileset(t->sharedTileset());
     }
+}
+
+QString EditableMapObject::templateFileName() const
+{
+    if (auto objectTemplate = mapObject()->objectTemplate())
+        return objectTemplate->fileName();
+    return QString();
+}
+
+void EditableMapObject::setTemplate(const QString &fileName)
+{
+    if (document()) {
+        ScriptManager::instance().throwError(QCoreApplication::translate("Script Errors", "Template can only be set on an object that is not part of an open map"));
+        return;
+    }
+    if (checkReadOnly())
+        return;
+
+    QString error;
+    auto objectTemplate = TemplateManager::instance()->loadObjectTemplate(fileName, &error);
+    if (!objectTemplate->object()) {
+        ScriptManager::instance().throwError(error.isEmpty() ? QCoreApplication::translate("Script Errors", "Invalid template") : error);
+        return;
+    }
+
+    mapObject()->setObjectTemplate(objectTemplate);
+    mapObject()->syncWithTemplate();
 }
 
 void EditableMapObject::setTileFlippedHorizontally(bool tileFlippedHorizontally)

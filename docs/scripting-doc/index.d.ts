@@ -1816,6 +1816,12 @@ declare class MapObject extends TiledObject {
   tileFlippedVertically: boolean;
 
   /**
+   * File name of the template this object is an instance of.
+   * Setting it turns the object into an instance of that template.
+   */
+  template: string;
+
+  /**
    * Whether the object is selected.
    */
   selected: boolean;
